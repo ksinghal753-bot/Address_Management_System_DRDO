@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-python.black-formatter",
+    "TheQtCompany.qt-python",
+    "seanwu.vscode-qt-for-python",
+    "GrapeCity.gc-excelviewer",
+    "tomoki1207.pdf"
+  ]
+}

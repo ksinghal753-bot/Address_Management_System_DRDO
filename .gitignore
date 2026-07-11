@@ -1,0 +1,11 @@
+﻿__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.db-shm
+*.db-wal
+*.log
+build/
+dist/
+.vscode/

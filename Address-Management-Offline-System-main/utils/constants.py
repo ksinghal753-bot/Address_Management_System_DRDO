@@ -101,6 +101,68 @@ def get_app_stylesheet(theme: str = "light"):
         color: {c['text_secondary']};
     }}
     
+    QCalendarWidget QWidget {{
+        background-color: #FFFFFF;
+        color: #1E293B;
+    }}
+    QCalendarWidget QTableView {{
+        background-color: #FFFFFF;
+        alternate-background-color: #F8FAFC;
+        color: #1E293B;
+        selection-background-color: #2563EB;
+        selection-color: #FFFFFF;
+    }}
+    QCalendarWidget QTableView::item {{
+        background-color: #FFFFFF;
+        color: #1E293B;
+    }}
+    QCalendarWidget QTableView::item:selected {{
+        background-color: #2563EB;
+        color: #FFFFFF;
+    }}
+    QCalendarWidget QWidget#qt_calendar_navigationbar {{
+        background-color: #FFFFFF;
+        border-bottom: 1px solid #E5E7EB;
+    }}
+    QCalendarWidget QToolButton {{
+        color: #1E293B;
+        background-color: transparent;
+        font-weight: bold;
+    }}
+    QCalendarWidget QToolButton:hover {{
+        background-color: #EFF6FF;
+    }}
+    QCalendarWidget QSpinBox {{
+        background-color: #FFFFFF;
+        color: #1E293B;
+    }}
+    QDateEdit QCalendarWidget QWidget {{
+        background-color: #FFFFFF;
+        color: #1E293B;
+    }}
+    QCalendarWidget QMenu {{
+        background-color: #FFFFFF;
+        color: #1E293B;
+        border: 1px solid #E5E7EB;
+    }}
+    QCalendarWidget QMenu::item {{
+        background-color: transparent;
+        padding: 6px 24px 6px 24px;
+    }}
+    QCalendarWidget QMenu::item:selected {{
+        background-color: #EFF6FF;
+        color: #2563EB;
+    }}
+    QMenu {{
+        background-color: #FFFFFF;
+        color: #1E293B;
+        border: 1px solid #E5E7EB;
+    }}
+    QMenu::item:selected {{
+        background-color: #EFF6FF;
+        color: #2563EB;
+    }}
+    
     QMainWindow {{
         background-color: {c['surface']};
     }}

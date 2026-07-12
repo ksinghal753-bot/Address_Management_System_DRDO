@@ -987,7 +987,7 @@ class AddressView(QWidget):
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.verticalHeader().setVisible(False)
-        self.table.verticalHeader().setDefaultSectionSize(50)
+        self.table.verticalHeader().setDefaultSectionSize(60)
         self.table.setSortingEnabled(True)
         self.table.itemSelectionChanged.connect(self._on_row_selected)
         self.table.itemChanged.connect(self._set_action_btns)
@@ -1101,7 +1101,7 @@ class AddressView(QWidget):
                 if key == "actions":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 8, 4, 8)
+                    container_layout.setContentsMargins(4, 4, 4, 4)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("View")
@@ -1115,7 +1115,7 @@ class AddressView(QWidget):
                         "  border-radius: 4px;"
                         "  font-weight: bold;"
                         "  font-size: 12px;"
-                        "  padding: 4px 12px;"
+                        "  padding: 2px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #121856;"
@@ -1133,12 +1133,11 @@ class AddressView(QWidget):
                 if key == "print_action":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 8, 4, 8)
+                    container_layout.setContentsMargins(4, 4, 4, 4)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("Print")
-                    btn.setMinimumWidth(70)
-                    btn.setMinimumHeight(28)
+                    btn.setFixedSize(70, 30)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #7A1212;"
@@ -1147,7 +1146,6 @@ class AddressView(QWidget):
                         "  border-radius: 4px;"
                         "  font-weight: bold;"
                         "  font-size: 12px;"
-                        "  padding: 4px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #5C0D0D;"
@@ -1165,12 +1163,11 @@ class AddressView(QWidget):
                 if key == "edit_action":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 8, 4, 8)
+                    container_layout.setContentsMargins(4, 4, 4, 4)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("Edit")
-                    btn.setMinimumWidth(70)
-                    btn.setMinimumHeight(28)
+                    btn.setFixedSize(70, 30)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #1f6b2e;"
@@ -1179,7 +1176,6 @@ class AddressView(QWidget):
                         "  border-radius: 4px;"
                         "  font-weight: bold;"
                         "  font-size: 12px;"
-                        "  padding: 4px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #154c20;"
@@ -1286,6 +1282,36 @@ class AddressView(QWidget):
         
         addr_lines_wrapped = [wrap_text_html_fonts(line) for line in addr_lines]
         
+        import os
+        import sys
+        if hasattr(sys, '_MEIPASS'):
+            base_dir = sys._MEIPASS
+        else:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        logo_path = os.path.join(base_dir, "assets", "drdo_logo_clean.png").replace('\\', '/')
+
+        sender_html = f'''
+        <div style="border: 1px solid black; display: inline-block; padding: 2px;">
+            <table border="0" style="border-collapse: collapse; color: black; font-size: 11pt; font-weight: normal; font-family: Arial, Mangal, sans-serif;">
+                <tr><td colspan="2" style="border: none; padding: 4px;"><b>प्रेषक:</b></td></tr>
+                <tr>
+                    <td style="border: none; padding: 4px; vertical-align: top;">
+                        <img src="file:///{logo_path}" width="75" height="75" />
+                    </td>
+                    <td style="border: none; padding: 4px; vertical-align: top; line-height: 1.2;">
+                        <b>निदेशक / Director</b><br/>
+                        <b>हवाई वितरण अनुसंधान एंव विकास संस्थापन</b><br/>
+                        <b>Aerial Delivery Research &amp; Development Establishment</b><br/>
+                        रक्षा अनुसंधान एंव विकास संगठन<br/>
+                        Defence Research &amp; Development Organisation<br/>
+                        पत्र पेटी संख्या 51, स्टेशन रोड, आगरा कैंट<br/>
+                        Post Box No. 51, Station Road, Agra Cantt-282001
+                    </td>
+                </tr>
+            </table>
+        </div>
+        '''
+        
         address_html = f"<div>{to_label_wrapped}</div>\n"
         for line in addr_lines_wrapped:
             address_html += f"<div>{line}</div>\n"
@@ -1300,17 +1326,21 @@ class AddressView(QWidget):
             <div style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; line-height: 1.5;">
                 <table width="100%" style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; color: #1a237e; font-weight: bold; border-collapse: collapse; margin-bottom: {margin_bottom};">
                     <tr>
-                        <td align="left" style="border: none; padding: 0;">{no_line_wrapped}<br/>{date_line_wrapped}</td>
-                        <td align="right" valign="top" style="border: none; padding: 0;">{right_text_wrapped}</td>
+                        <td align="left" valign="top" width="50%" style="border: none; padding: 0;">{no_line_wrapped}<br/>{date_line_wrapped}</td>
+                        <td align="right" valign="top" width="50%" style="border: none; padding: 0;">{right_text_wrapped}</td>
                     </tr>
                 </table>
-                <br/>
-                <table width="100%" style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; border-collapse: collapse;">
+                <table width="100%" style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; border-collapse: collapse; margin-bottom: 10px;">
                     <tr>
-                        <td width="45%" style="border: none; padding: 0;"></td>
+                        <td width="60%" style="border: none; padding: 0;"></td>
                         <td valign="top" style="color: #000000; border: none; padding: 0;">
                             {address_html}
                         </td>
+                    </tr>
+                </table>
+                <table width="100%" style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; color: #1a237e; font-weight: bold; border-collapse: collapse;">
+                    <tr>
+                        <td align="left" valign="bottom" width="100%" style="border: none; padding: 0;">{sender_html}</td>
                     </tr>
                 </table>
             </div>

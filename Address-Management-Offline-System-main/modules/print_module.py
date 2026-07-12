@@ -14,7 +14,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph as RLParagraph, Spacer, Table, TableStyle,
-    HRFlowable, PageBreak
+    HRFlowable, PageBreak, Image
 )
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -259,7 +259,7 @@ def _build_envelope_elements(record: dict, styles: dict) -> list:
     ]))
     
     elems.append(header_table)
-    elems.append(Spacer(1, 2.0*cm))  # Reduced gap before address block
+    elems.append(Spacer(1, 1.0*cm))  # Reduced gap before address block
 
     # Envelope box - Plain format with indentation
     # Col 1: Empty space (left offset)
@@ -286,7 +286,7 @@ def _build_envelope_elements(record: dict, styles: dict) -> list:
 
     env_table = Table(
         envelope_data,
-        colWidths=[14*cm, 1*cm, 10.7*cm]
+        colWidths=[13.0*cm, 1.5*cm, 11.2*cm]
     )
     env_table.setStyle(TableStyle([
         ("VALIGN",        (0, 0), (-1, -1), "TOP"),
@@ -297,6 +297,61 @@ def _build_envelope_elements(record: dict, styles: dict) -> list:
     ]))
 
     elems.append(env_table)
+    elems.append(Spacer(1, 0.5*cm))
+    
+    sender_style = styles['ref'].clone('Sender')
+    sender_style.fontSize = 9
+    sender_style.leading = 11
+    
+    sender_para = Paragraph(f"""<b>निदेशक / Director</b><br/>
+<b>हवाई वितरण अनुसंधान एंव विकास संस्थापन</b><br/>
+<b>Aerial Delivery Research &amp; Development Establishment</b><br/>
+रक्षा अनुसंधान एंव विकास संगठन<br/>
+Defence Research &amp; Development Organisation<br/>
+पत्र पेटी संख्या 51, स्टेशन रोड, आगरा कैंट<br/>
+Post Box No. 51, Station Road, Agra Cantt-282001""", sender_style)
+
+    logo_path = os.path.join(os.path.abspath('.'), "assets", "drdo_logo_clean.png")
+    if os.path.exists(logo_path):
+        logo_img = Image(logo_path, width=2.5*cm, height=2.5*cm)
+    else:
+        logo_img = ""
+
+    sender_inner_table = Table(
+        [
+            [Paragraph("<b>प्रेषक:</b>", sender_style), ""],
+            [logo_img, sender_para]
+        ],
+        colWidths=[2.7*cm, 8.5*cm]
+    )
+    sender_inner_table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("SPAN", (0, 0), (1, 0)),
+        ("LEFTPADDING", (0, 0), (-1, -1), 2),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+        ("TOPPADDING", (0, 0), (-1, -1), 2),
+    ]))
+    
+    sender_table = Table([[sender_inner_table]], colWidths=[11.5*cm])
+    sender_table.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 1, colors.black),
+        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+    ]))
+
+    bottom_table = Table(
+        [
+            [sender_table, ""]
+        ],
+        colWidths=[15*cm, 10.7*cm]
+    )
+    bottom_table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "BOTTOM"),
+    ]))
+    elems.append(bottom_table)
     
     return elems
 

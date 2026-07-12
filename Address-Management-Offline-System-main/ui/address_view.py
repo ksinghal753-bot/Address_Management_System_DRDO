@@ -195,46 +195,54 @@ class EnvelopeReferenceDialog(QDialog):
             cal.setStyleSheet("""
     QCalendarWidget { 
         background-color: #FFFFFF; 
-        color: #333333;
+        color: #1E293B;
         border: 1px solid #E5E7EB;
         border-radius: 10px;
     }
     QCalendarWidget QWidget {
-        alternate-background-color: #FFFFFF;
-    }
-    QCalendarWidget QAbstractItemView:enabled {
-        color: #333333;
         background-color: #FFFFFF;
-        selection-background-color: #2563EB;
-        selection-color: #FFFFFF;
-    }
-    QCalendarWidget QAbstractItemView:disabled {
-        color: #BDBDBD;
+        alternate-background-color: #F8FAFC;
     }
     QCalendarWidget QWidget#qt_calendar_navigationbar { 
         background-color: #FFFFFF; 
         border-bottom: 1px solid #E5E7EB; 
     }
     QCalendarWidget QToolButton { 
-        color: #333333; 
+        color: #1E293B; 
         background-color: transparent; 
         font-weight: bold; 
     }
-    QCalendarWidget QToolButton:hover { background-color: #E3F2FD; }
-    QCalendarWidget QSpinBox { background-color: #FFFFFF; color: #333333; }
+    QCalendarWidget QToolButton:hover { background-color: #EFF6FF; }
+    QCalendarWidget QSpinBox { background-color: #FFFFFF; color: #1E293B; }
     QCalendarWidget QTableView { 
         background-color: #FFFFFF; 
-        color: #333333; 
+        alternate-background-color: #F8FAFC;
+        color: #1E293B; 
         selection-background-color: #2563EB; 
         selection-color: #FFFFFF;
+        border: none;
     }
-    QCalendarWidget QTableView:hover {
-        background-color: #E3F2FD;
+    QCalendarWidget QTableView::item {
+        background-color: #FFFFFF;
+        color: #1E293B;
     }
-    QCalendarWidget QHeaderView { background-color: #FFFFFF; }
+    QCalendarWidget QTableView::item:selected {
+        background-color: #2563EB;
+        color: #FFFFFF;
+    }
+    QCalendarWidget QAbstractItemView:enabled {
+        color: #1E293B;
+        background-color: #FFFFFF;
+        selection-background-color: #2563EB;
+        selection-color: #FFFFFF;
+    }
+    QCalendarWidget QAbstractItemView:disabled {
+        color: #94A3B8;
+    }
+    QCalendarWidget QHeaderView { background-color: #FFFFFF; border: none; }
     QCalendarWidget QHeaderView::section { 
         background-color: #FFFFFF; 
-        color: #1E3A8A; 
+        color: #1E293B; 
         font-weight: bold; 
     }
     QMenu {
@@ -491,7 +499,7 @@ class PrintOptionsDialog(QDialog):
             return btn
             
         self.btn_envelope = create_btn("✉️ Print Selected envelopes / चयनित लिफाफे प्रिंट करें", True, has_selected or has_checked)
-        self.btn_dept = create_btn("📋 Print Department List / विभाग सूची", False, has_dept)
+        self.btn_dept = create_btn("📋 Print Department List / विभाग सूची", False, True)
         self.btn_all = create_btn("📄 Print Full Directory (All) / सभी पते", False, True)
         
         self.btn_cancel = QPushButton("Cancel / रद्द करें")
@@ -979,6 +987,7 @@ class AddressView(QWidget):
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.verticalHeader().setVisible(False)
+        self.table.verticalHeader().setDefaultSectionSize(50)
         self.table.setSortingEnabled(True)
         self.table.itemSelectionChanged.connect(self._on_row_selected)
         self.table.itemChanged.connect(self._set_action_btns)
@@ -1092,12 +1101,12 @@ class AddressView(QWidget):
                 if key == "actions":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 2, 4, 2)
+                    container_layout.setContentsMargins(4, 8, 4, 8)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("View")
-                    btn.setMinimumWidth(80)
-                    btn.setFixedHeight(22)
+                    btn.setMinimumWidth(70)
+                    btn.setMinimumHeight(28)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #1a237e;"
@@ -1105,7 +1114,8 @@ class AddressView(QWidget):
                         "  border: none;"
                         "  border-radius: 4px;"
                         "  font-weight: bold;"
-                        "  font-size: 11px;"
+                        "  font-size: 12px;"
+                        "  padding: 4px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #121856;"
@@ -1123,12 +1133,12 @@ class AddressView(QWidget):
                 if key == "print_action":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 2, 4, 2)
+                    container_layout.setContentsMargins(4, 8, 4, 8)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("Print")
-                    btn.setMinimumWidth(80)
-                    btn.setFixedHeight(22)
+                    btn.setMinimumWidth(70)
+                    btn.setMinimumHeight(28)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #7A1212;"
@@ -1136,7 +1146,8 @@ class AddressView(QWidget):
                         "  border: none;"
                         "  border-radius: 4px;"
                         "  font-weight: bold;"
-                        "  font-size: 11px;"
+                        "  font-size: 12px;"
+                        "  padding: 4px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #5C0D0D;"
@@ -1154,12 +1165,12 @@ class AddressView(QWidget):
                 if key == "edit_action":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 2, 4, 2)
+                    container_layout.setContentsMargins(4, 8, 4, 8)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("Edit")
-                    btn.setMinimumWidth(80)
-                    btn.setFixedHeight(22)
+                    btn.setMinimumWidth(70)
+                    btn.setMinimumHeight(28)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #1f6b2e;"
@@ -1167,7 +1178,8 @@ class AddressView(QWidget):
                         "  border: none;"
                         "  border-radius: 4px;"
                         "  font-weight: bold;"
-                        "  font-size: 11px;"
+                        "  font-size: 12px;"
+                        "  padding: 4px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #154c20;"
@@ -1192,6 +1204,7 @@ class AddressView(QWidget):
                 if key == "delivery_type":
                     val = val[:15]  # Truncate for display
                 item = QTableWidgetItem(val)
+                item.setTextAlignment(Qt.AlignVCenter | Qt.AlignLeft)
                 item.setData(Qt.UserRole, rec)
                 self.table.setItem(row_idx, col_idx, item)
         self.table.resizeColumnsToContents()

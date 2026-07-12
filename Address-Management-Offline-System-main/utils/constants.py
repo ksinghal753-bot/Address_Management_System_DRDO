@@ -85,6 +85,13 @@ COLORS = LIGHT_COLORS
 
 # ─── Stylesheet ───────────────────────────────────────────────────────────────
 def get_app_stylesheet(theme: str = "light"):
+    import sys
+    import os
+    if hasattr(sys, '_MEIPASS'):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    check_icon = os.path.join(base_path, 'assets', 'checkbox_checked_dark.png').replace('\\', '/')
     c = LIGHT_COLORS
     return f"""
     /* ── Global ── */
@@ -92,7 +99,6 @@ def get_app_stylesheet(theme: str = "light"):
         font-family: 'Inter', 'Segoe UI', 'Noto Sans Devanagari', sans-serif;
         font-size: 14px;
         color: {c['text_secondary']};
-        background-color: transparent;
     }}
     
     QMainWindow {{
@@ -443,13 +449,14 @@ def get_app_stylesheet(theme: str = "light"):
 
     /* ── QCalendarWidget (Date Picker Calendar) ── */
     QCalendarWidget {{
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
+        background-color: #FFFFFF !important;
+        color: #1E293B !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 12px !important;
     }}
     QCalendarWidget QWidget#qt_calendar_navigationbar {{
-        background-color: #F8FAFC;
-        border-bottom: 1px solid #E2E8F0;
+        background-color: #FFFFFF !important;
+        border-bottom: 1px solid #E2E8F0 !important;
         border-top-left-radius: 12px;
         border-top-right-radius: 12px;
         padding: 4px;
@@ -463,6 +470,14 @@ def get_app_stylesheet(theme: str = "light"):
         border-radius: 6px;
         margin: 4px;
         padding: 6px;
+    }}
+    QCalendarWidget QWidget {{
+        background-color: #FFFFFF;
+        alternate-background-color: #F8FAFC;
+    }}
+    QCalendarWidget QAbstractItemView {{
+        background-color: #FFFFFF;
+        color: #1E293B;
     }}
     QCalendarWidget QToolButton:hover {{
         background-color: #E2E8F0;
@@ -665,16 +680,35 @@ def get_app_stylesheet(theme: str = "light"):
     }}
 
     /* ── Splitter ── */
+    QCheckBox::indicator, QTableView::indicator {{
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        border: 2px solid #475569;
+        background-color: #F8FAFC;
+    }}
+
+    QCheckBox::indicator:unchecked:hover, QTableView::indicator:unchecked:hover {{
+        border: 2px solid #1E293B;
+        background-color: #F1F5F9;
+    }}
+    
+    QCheckBox::indicator:checked, QTableView::indicator:checked {{
+        image: url({check_icon});
+        border: 2px solid #1a237e;
+        background-color: #F8FAFC;
+    }}
+
     QSplitter::handle {{
         background: #E2E8F0;
         width: 2px;
     }}
 
     QToolTip {{
-        background-color: #1E293B;
-        color: #F8FAFC;
-        border: 1px solid #0F172A;
-        padding: 8px 12px;
+        background-color: #F8FAFC;
+        color: #1E293B;
+        border: 1px solid #94A3B8;
+        padding: 6px 10px;
         border-radius: 6px;
         font-family: 'Segoe UI', 'Inter', sans-serif;
         font-size: 13px;

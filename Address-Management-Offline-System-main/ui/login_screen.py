@@ -495,7 +495,7 @@ class LoginScreen(QWidget):
         layout.addLayout(names_row)
 
         # 3. Full-width Email
-        lbl_user = QLabel("Email Address")
+        lbl_user = QLabel("Username/ Email Address")
         lbl_user.setStyleSheet("font-weight: bold; color: #5c4e49; font-size: 12px; border: none; background: transparent;")
         self.signup_user = QLineEdit()
         self.signup_user.setPlaceholderText("your@email.com")

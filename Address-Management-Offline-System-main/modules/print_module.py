@@ -172,7 +172,7 @@ def format_ref_no(para_no: str, date_str: str, ref_suffix: str = "") -> str:
         ref_line = f"NO.:- {ENVELOPE_PREFIX}/{para_part}/{suffix}"
     else:
         ref_line = f"NO.:- {ENVELOPE_PREFIX}/{para_part}"
-    return f"{ref_line}\nDate:- {date_formatted}"
+    return f"{ref_line}\nDated:- {date_formatted}"
 
 
 def _get_styles():
@@ -232,8 +232,7 @@ def _build_envelope_elements(record: dict, styles: dict) -> list:
 
     ref_parts = ref_no.split("\n")
     no_line = ref_parts[0]
-    # Remove space after Date:- to match request
-    date_line = ref_parts[1].replace("Date:- ", "Date:-") if len(ref_parts) > 1 else ""
+    date_line = ref_parts[1] if len(ref_parts) > 1 else ""
 
     # Override colors and font size, use HINDI_FONT for proper Devanagari rendering
     ref_style = ParagraphStyle('EnvRef', parent=styles['ref'], textColor=BLACK, fontSize=12, fontName=HINDI_FONT)
@@ -245,17 +244,20 @@ def _build_envelope_elements(record: dict, styles: dict) -> list:
     # Create a 2-column header Table: NO:-/Date:- and By S/P
     header_table = Table(
         [
-            [Paragraph(f"{no_line}<br/>{date_line}", ref_style), Paragraph(f"By S/P: {sp_fmt}", sp_style)]
+            [Paragraph(no_line, ref_style), Paragraph(f"By S/P: {sp_fmt}", sp_style)],
+            [Paragraph(date_line, ref_style), ""]
         ],
         colWidths=[15*cm, 10.7*cm]
     )
     header_table.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+        ("SPAN", (1, 0), (1, 1)),
         ("LEFTPADDING", (0, 0), (-1, -1), 0),
         ("RIGHTPADDING", (0, 0), (-1, -1), 0),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
         ("TOPPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 1), (0, 1), 6),  # Add a little space between No and Date
     ]))
     
     elems.append(header_table)
@@ -311,36 +313,64 @@ Defence Research &amp; Development Organisation<br/>
 पत्र पेटी संख्या 51, स्टेशन रोड, आगरा कैंट<br/>
 Post Box No. 51, Station Road, Agra Cantt-282001""", sender_style)
 
-    logo_path = os.path.join(os.path.abspath('.'), "assets", "drdo_logo_clean.png")
-    if os.path.exists(logo_path):
-        logo_img = Image(logo_path, width=2.5*cm, height=2.5*cm)
+    import sys
+    if hasattr(sys, '_MEIPASS'):
+        base_dir = sys._MEIPASS
     else:
-        logo_img = ""
-
-    sender_inner_table = Table(
-        [
-            [Paragraph("<b>प्रेषक:</b>", sender_style), ""],
-            [logo_img, sender_para]
-        ],
-        colWidths=[2.7*cm, 8.5*cm]
-    )
-    sender_inner_table.setStyle(TableStyle([
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("SPAN", (0, 0), (1, 0)),
-        ("LEFTPADDING", (0, 0), (-1, -1), 2),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 2),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
-        ("TOPPADDING", (0, 0), (-1, -1), 2),
-    ]))
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    logo_path = os.path.join(base_dir, "assets", "adrde_logo.png")
     
-    sender_table = Table([[sender_inner_table]], colWidths=[11.5*cm])
-    sender_table.setStyle(TableStyle([
-        ("BOX", (0, 0), (-1, -1), 1, colors.black),
-        ("LEFTPADDING", (0, 0), (-1, -1), 4),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-        ("TOPPADDING", (0, 0), (-1, -1), 4),
-    ]))
+    use_image_only = False
+    if os.path.exists(logo_path):
+        try:
+            from reportlab.lib.utils import ImageReader
+            img_reader = ImageReader(logo_path)
+            iw, ih = img_reader.getSize()
+            aspect = ih / float(iw)
+            logo_img = Image(logo_path, width=11.5*cm, height=11.5*cm * aspect)
+            use_image_only = True
+        except Exception:
+            logo_img = ""
+            use_image_only = False
+    else:
+        use_image_only = False
+
+    if use_image_only:
+        # User requested to replace the entire box with the image itself
+        sender_table = Table([[logo_img]], colWidths=[11.5*cm])
+        sender_table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 0),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+            ("TOPPADDING", (0, 0), (-1, -1), 0),
+        ]))
+    else:
+        sender_inner_table = Table(
+            [
+                [Paragraph("<b>प्रेषक:</b>", sender_style), ""],
+                [logo_img, sender_para]
+            ],
+            colWidths=[2.7*cm, 8.5*cm]
+        )
+        sender_inner_table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("SPAN", (0, 0), (1, 0)),
+            ("LEFTPADDING", (0, 0), (-1, -1), 2),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 2),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+            ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ]))
+        
+        sender_table = Table([[sender_inner_table]], colWidths=[11.5*cm])
+        sender_table.setStyle(TableStyle([
+            ("BOX", (0, 0), (-1, -1), 1, colors.black),
+            ("LEFTPADDING", (0, 0), (-1, -1), 4),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ]))
 
     bottom_table = Table(
         [

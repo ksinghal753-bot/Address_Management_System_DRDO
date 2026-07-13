@@ -66,3 +66,64 @@
 2026-07-12 21:09:29 | INFO | admin | LOGIN | Successful login as admin
 2026-07-12 21:11:34 | INFO | admin | LOGIN | Successful login as admin
 2026-07-12 21:12:26 | INFO | admin | EDIT_ADDRESS | ID: 5 | Office: jhg
+2026-07-12 22:59:21 | INFO | admin | LOGOUT | User admin logged out
+2026-07-13 08:46:54 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:01:51 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:06:49 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:10:25 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:14:47 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:17:12 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:20:21 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:20:40 | INFO | admin | ADD_ADDRESS | Office: wehoif | Dept ID: 8
+2026-07-13 22:21:12 | INFO | admin | ADD_ADDRESS | Office: kk | Dept ID: 8
+2026-07-13 22:24:50 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:28:20 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:31:58 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:36:33 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:39:19 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:40:58 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:44:18 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:49:30 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 22:57:12 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 23:01:45 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 23:04:21 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 23:06:47 | INFO | admin | LOGIN | Successful login as admin
+2026-07-13 23:09:46 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:10:03 | INFO | admin | LOGOUT | User admin logged out
+2026-07-14 00:16:14 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:16:19 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 00:21:05 | INFO | system | BACKUP_CREATED | File: backup_auto_20260714_002105.db
+2026-07-14 00:21:12 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:21:18 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 00:23:26 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:23:31 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 00:30:18 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:30:24 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 00:34:04 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:34:10 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 00:38:09 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:38:14 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 00:38:30 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 00:44:20 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:45:13 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:48:27 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:49:59 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 00:59:03 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 01:00:35 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:00:40 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:02:49 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 01:04:29 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 01:04:45 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:04:56 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:11:22 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 01:11:28 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:11:40 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:13:58 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:15:03 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 01:15:08 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:15:24 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:16:38 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:21:31 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 01:21:37 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:21:52 | INFO | admin | EDIT_ADDRESS | ID: 7 | Office: kk
+2026-07-14 01:21:52 | INFO | admin | EDIT_ADDRESS | ID: 6 | Office: wehoif

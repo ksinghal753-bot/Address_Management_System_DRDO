@@ -11,10 +11,11 @@ from datetime import datetime
 
 def _get_log_dir() -> str:
     if getattr(sys, 'frozen', False):
-        base = os.path.dirname(sys.executable)
+        base = os.environ.get('LOCALAPPDATA', os.path.dirname(sys.executable))
+        log_dir = os.path.join(base, 'ADRDE_Address_Management', 'logs')
     else:
         base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    log_dir = os.path.join(base, 'logs')
+        log_dir = os.path.join(base, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     return log_dir
 

@@ -12,10 +12,11 @@ MAX_BACKUPS = 10
 
 def _get_backup_dir() -> str:
     if getattr(sys, 'frozen', False):
-        base = os.path.dirname(sys.executable)
+        base = os.environ.get('LOCALAPPDATA', os.path.dirname(sys.executable))
+        backup_dir = os.path.join(base, 'ADRDE_Address_Management', 'backups')
     else:
         base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    backup_dir = os.path.join(base, 'backups')
+        backup_dir = os.path.join(base, 'backups')
     os.makedirs(backup_dir, exist_ok=True)
     return backup_dir
 

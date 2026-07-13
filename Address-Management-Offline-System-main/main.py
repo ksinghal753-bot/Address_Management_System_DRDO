@@ -127,6 +127,7 @@ def main():
 
     # Set default font with Devanagari support
     font = QFont("Segoe UI", 10)
+    font.setWeight(QFont.Weight.Medium)  # Make text slightly bolder across the system
     app.setFont(font)
 
     window = MainWindow()

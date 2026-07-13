@@ -158,9 +158,23 @@ def get_app_stylesheet(theme: str = "light"):
         color: #1E293B;
         border: 1px solid #E5E7EB;
     }}
+    QMenu::item {{
+        background-color: transparent;
+        color: #1E293B;
+        padding: 4px 24px;
+    }}
     QMenu::item:selected {{
         background-color: #EFF6FF;
         color: #2563EB;
+    }}
+    QAbstractItemView, QListView {{
+        background-color: #FFFFFF;
+        background: #FFFFFF;
+        color: #1E293B;
+        selection-background-color: #EFF6FF;
+        selection-color: #2563EB;
+        outline: none;
+        border: 1px solid #E5E7EB;
     }}
     
     QMainWindow {{
@@ -462,6 +476,14 @@ def get_app_stylesheet(theme: str = "light"):
         border-top: 6px solid {c['primary']};
         margin-right: 8px;
     }}
+    QComboBox QAbstractItemView {{
+        background-color: #FFFFFF;
+        color: #1E293B;
+        selection-background-color: #EFF6FF;
+        selection-color: #2563EB;
+        outline: none;
+        border: 1px solid #D1D5DB;
+    }}
     
     QDateEdit {{
         background: #FFFFFF;
@@ -635,9 +657,10 @@ def get_app_stylesheet(theme: str = "light"):
         outline: none;
     }}
     QTableWidget::item {{
-        padding: 10px 8px;
+        padding: 4px 8px;
         border-bottom: 1px solid #F8FAFC;
-        color: #1E293B;
+        color: #000000;
+        font-weight: bold;
     }}
     QTableWidget::item:alternate {{
         background: #FAFAFA;

@@ -18,7 +18,10 @@ def get_db_path() -> str:
         base = os.path.dirname(sys.executable)
     else:
         base = os.path.dirname(os.path.abspath(__file__))
-    db_dir = os.path.join(base, '..', 'data') if not getattr(sys, 'frozen', False) else base
+    if getattr(sys, 'frozen', False):
+        db_dir = os.path.join(os.environ.get('LOCALAPPDATA', base), 'ADRDE_Address_Management', 'data')
+    else:
+        db_dir = os.path.join(base, '..', 'data')
     os.makedirs(db_dir, exist_ok=True)
     return os.path.join(db_dir, 'address_management.db')
 

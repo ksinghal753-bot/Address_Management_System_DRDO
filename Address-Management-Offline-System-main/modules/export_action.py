@@ -184,11 +184,7 @@ def execute_export_action(
             show_error(parent_widget, "Export Error", result)
 
     elif opt == "direct":
-        # ── Check for a real physical printer first ──────────────────────
-        real_printers = _get_real_printers()
-        if not real_printers:
-            _show_no_printer_dialog(parent_widget)
-            return
+        # (Moved printer check to after the preview)
 
         # ── Generate temporary PDF ───────────────────────────────────────
         fd, temp_path = tempfile.mkstemp(suffix=".pdf")
@@ -200,47 +196,89 @@ def execute_export_action(
                 show_error(parent_widget, "Generation Error", result)
                 return
 
-            import sys
-            printed = False
-
-            # Try native Windows printer picker via ShellExecute
-            if sys.platform == "win32":
-                try:
-                    import ctypes
-                    ret = ctypes.windll.shell32.ShellExecuteW(
-                        None, "print", temp_path, None, None, 0
-                    )
-                    if ret > 32:
-                        printed = True
-                        show_info(
-                            parent_widget, "Printing",
-                            "The Windows print dialog has been opened.\n"
-                            "Please select your printer and click Print."
-                        )
-                except Exception:
-                    pass
-
-            # Fallback: Qt QPrintDialog
-            if not printed:
-                from modules.direct_print import print_pdf_directly
-                printer = QPrinter(QPrinter.HighResolution)
-                printer.setColorMode(QPrinter.Color)
-                pdlg = QPrintDialog(printer, parent_widget)
-                pdlg.setWindowTitle("Select Printer / \u092a\u094d\u0930\u093f\u0902\u091f\u0930 \u091a\u0941\u0928\u0947\u0902")
-                pdlg.setStyleSheet(
-                    "QDialog { background-color: #FFFFFF; color: #000000; }"
-                    "QLabel { color: #000000; }"
-                    "QPushButton { background-color: #F0F0F0; color: #000000;"
-                    " border: 1px solid #CCCCCC; padding: 4px 12px; }"
-                    "QPushButton:hover { background-color: #E0E0E0; }"
-                    "QComboBox { background-color: #FFFFFF; color: #000000; }"
-                    "QGroupBox { color: #000000; }"
-                )
-                if pdlg.exec() != QDialog.Accepted:
+            # ── Envelope Preview before printing ──
+            html_preview_doc = None
+            if is_envelope_or_label and len(records) == 1 and hasattr(parent_widget, "_get_preview_html"):
+                from ui.address_view import ZoomablePreview
+                html = parent_widget._get_preview_html(records[0], is_dialog=True)
+                preview_dlg = QDialog(parent_widget)
+                preview_dlg.setWindowTitle("Print Preview / प्रिंट पूर्वावलोकन")
+                preview_dlg.resize(850, 480)
+                lay = QVBoxLayout(preview_dlg)
+                preview_text = ZoomablePreview(html)
+                preview_text.setStyleSheet("QGraphicsView { border: 1px solid #CCCCCC; border-radius: 8px; }")
+                lay.addWidget(preview_text, stretch=1)
+                
+                btn_box = QHBoxLayout()
+                btn_box.addStretch()
+                proceed_btn = QPushButton("Proceed to Print / प्रिंट करने के लिए आगे बढ़ें")
+                proceed_btn.setStyleSheet("background-color: #7A1212; color: white; padding: 6px 16px; font-weight: bold; border-radius: 4px;")
+                proceed_btn.clicked.connect(preview_dlg.accept)
+                cancel_btn = QPushButton("Cancel / रद्द करें")
+                cancel_btn.clicked.connect(preview_dlg.reject)
+                btn_box.addWidget(proceed_btn)
+                btn_box.addWidget(cancel_btn)
+                lay.addLayout(btn_box)
+                
+                if preview_dlg.exec() != QDialog.Accepted:
                     return
-                pok, presult = print_pdf_directly(temp_path, printer)
-                if not pok:
-                    show_error(parent_widget, "Print Error", presult)
+                html_preview_doc = preview_text.text_doc
+
+            # ── Check for a real physical printer first ──────────────────────
+            real_printers = _get_real_printers()
+            if not real_printers:
+                _show_no_printer_dialog(parent_widget)
+                return
+
+            from modules.direct_print import print_pdf_directly
+            printer = QPrinter(QPrinter.HighResolution)
+            printer.setColorMode(QPrinter.Color)
+            printer.setDuplex(QPrinter.DuplexNone)
+            pdlg = QPrintDialog(printer, parent_widget)
+            pdlg.setWindowTitle("Select Printer / प्रिंटर चुनें")
+            pdlg.setStyleSheet(
+                "QDialog { background-color: #FFFFFF; color: #000000; }"
+                "QLabel { color: #000000; }"
+                "QPushButton { background-color: #F0F0F0; color: #000000;"
+                " border: 1px solid #CCCCCC; padding: 4px 12px; }"
+                "QPushButton:hover { background-color: #E0E0E0; }"
+                "QComboBox { background-color: #FFFFFF; color: #000000; }"
+                "QGroupBox { color: #000000; }"
+            )
+            
+            if pdlg.exec() == QDialog.Accepted:
+                if html_preview_doc:
+                    from PySide6.QtGui import QPageLayout
+                    printer.setPageOrientation(QPageLayout.Orientation.Landscape)
+                    html_preview_doc.print_(printer)
+                    pok = True
+                else:
+                    pok, presult = print_pdf_directly(temp_path, printer)
+                    if not pok:
+                        show_error(parent_widget, "Print Error", presult)
+            else:
+                from PySide6.QtWidgets import QMessageBox
+                reply = QMessageBox.question(
+                    parent_widget,
+                    "Default Printer",
+                    "No printer was selected. Do you want to print to the default system printer?",
+                    QMessageBox.Yes | QMessageBox.No
+                )
+                if reply == QMessageBox.Yes:
+                    default_printer_info = QPrinterInfo.defaultPrinter()
+                    if default_printer_info.isNull():
+                        show_error(parent_widget, "Print Error", "No default printer found on this system.")
+                    else:
+                        printer.setPrinterName(default_printer_info.printerName())
+                        if html_preview_doc:
+                            from PySide6.QtGui import QPageLayout
+                            printer.setPageOrientation(QPageLayout.Orientation.Landscape)
+                            html_preview_doc.print_(printer)
+                            pok = True
+                        else:
+                            pok, presult = print_pdf_directly(temp_path, printer)
+                            if not pok:
+                                show_error(parent_widget, "Print Error", presult)
         finally:
             # Delay deletion so ShellExecute can finish reading the file
             import threading

@@ -65,6 +65,7 @@ TABLE_COLUMNS = [
     ("Contact / संपर्क", "contact_no"),
     ("Fax / फैक्स", "fax"),
     ("Print", "print_action"),
+    ("Open", "open_action"),
     ("Edit", "edit_action"),
 ]
 
@@ -815,10 +816,10 @@ class AddressView(QWidget):
 
         grid.addWidget(self.add_btn, 0, 0)
         grid.addWidget(self.edit_btn, 0, 1)
-        grid.addWidget(self.del_btn, 0, 2)
-        grid.addWidget(self.view_btn, 1, 0)
-        grid.addWidget(self.clear_sel_btn, 1, 1)
-        grid.addWidget(self.print_btn, 1, 2)
+        grid.addWidget(self.view_btn, 0, 2)
+        grid.addWidget(self.clear_sel_btn, 0, 3)
+        grid.addWidget(self.del_btn, 0, 4)
+        grid.addWidget(self.print_btn, 0, 5)
 
         search_vbox.addLayout(grid)
         search_vbox.addWidget(HLine())
@@ -848,51 +849,16 @@ class AddressView(QWidget):
         self.para_filter.currentIndexChanged.connect(self._do_search)
 
         row1.addWidget(dept_lbl)
-        row1.addWidget(self.dept_filter, stretch=1)
-        row1.addWidget(para_lbl)
-        row1.addWidget(self.para_filter, stretch=1)
+        self.dept_filter.setMaximumWidth(400)
+        row1.addWidget(self.dept_filter)
+        row1.addStretch()
 
         search_vbox.addLayout(row1)
 
         top_layout.addWidget(search_widget, stretch=1)
 
-        # Right: envelope preview
-        right_widget = QWidget()
-        right_widget.setObjectName("addressViewRight")
-        right_widget.setStyleSheet(f"#addressViewRight {{ background-color: {COLORS['surface']}; border: 1.5px solid {COLORS['border']}; border-radius: 12px; }}")
-        right_vbox = QVBoxLayout(right_widget)
-        right_vbox.setContentsMargins(12, 12, 12, 12)
-        right_vbox.setSpacing(8)
+        # Envelope preview panel has been removed per user request
 
-        header_row = QHBoxLayout()
-        prev_title = SectionTitle("Envelope Preview / लिफाफा पूर्वावलोकन")
-        
-        self.preview_open_btn = QPushButton("👁️ Open / खोलें")
-        self.preview_open_btn.setObjectName("secondaryButton")
-        self.preview_open_btn.setEnabled(False)
-        self.preview_open_btn.clicked.connect(self._open_envelope_preview_dialog)
-        
-        header_row.addWidget(prev_title)
-        header_row.addStretch()
-        header_row.addWidget(self.preview_open_btn)
-        
-        right_vbox.addLayout(header_row)
-        right_vbox.addWidget(HLine())
-
-        self.envelope_preview = QTextEdit()
-        self.envelope_preview.setReadOnly(True)
-        self.envelope_preview.setObjectName("envelopePreview")
-        self.envelope_preview.setFont(QFont("Courier New", 11))
-        # Remove default border since parent now has it
-        self.envelope_preview.setStyleSheet("border: none; background: transparent;")
-        
-        # Prevent envelope preview from expanding the layout height
-        from PySide6.QtWidgets import QSizePolicy
-        self.envelope_preview.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
-        
-        right_vbox.addWidget(self.envelope_preview, stretch=1)
-
-        top_layout.addWidget(right_widget, stretch=1)
         root.addLayout(top_layout)
 
         # ── Bottom Section (Table) ──────────────────────────────────
@@ -1090,6 +1056,7 @@ class AddressView(QWidget):
         self.table.setRowCount(0)
         for row_idx, rec in enumerate(records):
             self.table.insertRow(row_idx)
+            self.table.setRowHeight(row_idx, 55)
             for col_idx, (_, key) in enumerate(TABLE_COLUMNS):
                 if key == "select":
                     item = QTableWidgetItem()
@@ -1101,18 +1068,17 @@ class AddressView(QWidget):
                 if key == "actions":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 4, 4, 4)
+                    container_layout.setContentsMargins(0, 0, 0, 0)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("View")
-                    btn.setMinimumWidth(70)
-                    btn.setMinimumHeight(28)
+                    btn.setFixedSize(70, 28)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #1a237e;"
                         "  color: white;"
                         "  border: none;"
-                        "  border-radius: 4px;"
+                        "  border-radius: 14px;"
                         "  font-weight: bold;"
                         "  font-size: 12px;"
                         "  padding: 2px 12px;"
@@ -1133,19 +1099,20 @@ class AddressView(QWidget):
                 if key == "print_action":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 4, 4, 4)
+                    container_layout.setContentsMargins(0, 0, 0, 0)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("Print")
-                    btn.setFixedSize(70, 30)
+                    btn.setFixedSize(70, 28)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #7A1212;"
                         "  color: white;"
                         "  border: none;"
-                        "  border-radius: 4px;"
+                        "  border-radius: 14px;"
                         "  font-weight: bold;"
                         "  font-size: 12px;"
+                        "  padding: 2px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #5C0D0D;"
@@ -1160,22 +1127,55 @@ class AddressView(QWidget):
                     item.setData(Qt.UserRole, rec)
                     self.table.setItem(row_idx, col_idx, item)
                     continue
+                if key == "open_action":
+                    container = QWidget()
+                    container_layout = QHBoxLayout(container)
+                    container_layout.setContentsMargins(0, 0, 0, 0)
+                    container_layout.setAlignment(Qt.AlignCenter)
+                    
+                    btn = QPushButton("Open")
+                    btn.setFixedSize(70, 28)
+                    btn.setStyleSheet(
+                        "QPushButton {"
+                        "  background-color: white;"
+                        "  color: #2196F3;"
+                        "  border: 1px solid #BBDEFB;"
+                        "  border-radius: 14px;"
+                        "  font-weight: bold;"
+                        "  font-size: 12px;"
+                        "  padding: 2px 12px;"
+                        "}"
+                        "QPushButton:hover {"
+                        "  background-color: #E3F2FD;"
+                        "  border-color: #2196F3;"
+                        "}"
+                    )
+                    btn.clicked.connect(lambda checked=False, r=rec: self._open_envelope_preview_for_record(r))
+                    container_layout.addWidget(btn)
+                    
+                    self.table.setCellWidget(row_idx, col_idx, container)
+                    
+                    item = QTableWidgetItem()
+                    item.setData(Qt.UserRole, rec)
+                    self.table.setItem(row_idx, col_idx, item)
+                    continue
                 if key == "edit_action":
                     container = QWidget()
                     container_layout = QHBoxLayout(container)
-                    container_layout.setContentsMargins(4, 4, 4, 4)
+                    container_layout.setContentsMargins(0, 0, 0, 0)
                     container_layout.setAlignment(Qt.AlignCenter)
                     
                     btn = QPushButton("Edit")
-                    btn.setFixedSize(70, 30)
+                    btn.setFixedSize(70, 28)
                     btn.setStyleSheet(
                         "QPushButton {"
                         "  background-color: #1f6b2e;"
                         "  color: white;"
                         "  border: none;"
-                        "  border-radius: 4px;"
+                        "  border-radius: 14px;"
                         "  font-weight: bold;"
                         "  font-size: 12px;"
+                        "  padding: 2px 12px;"
                         "}"
                         "QPushButton:hover {"
                         "  background-color: #154c20;"
@@ -1204,7 +1204,7 @@ class AddressView(QWidget):
                 item.setData(Qt.UserRole, rec)
                 self.table.setItem(row_idx, col_idx, item)
         self.table.resizeColumnsToContents()
-        self.table.resizeRowsToContents()
+        self.table.verticalHeader().setDefaultSectionSize(48)
         self.table.setSortingEnabled(True)
 
     def _do_search(self):
@@ -1288,27 +1288,11 @@ class AddressView(QWidget):
             base_dir = sys._MEIPASS
         else:
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        logo_path = os.path.join(base_dir, "assets", "drdo_logo_clean.png").replace('\\', '/')
+        logo_path = os.path.join(base_dir, "assets", "adrde_logo.png").replace('\\', '/')
 
         sender_html = f'''
-        <div style="border: 1px solid black; display: inline-block; padding: 2px;">
-            <table border="0" style="border-collapse: collapse; color: black; font-size: 11pt; font-weight: normal; font-family: Arial, Mangal, sans-serif;">
-                <tr><td colspan="2" style="border: none; padding: 4px;"><b>प्रेषक:</b></td></tr>
-                <tr>
-                    <td style="border: none; padding: 4px; vertical-align: top;">
-                        <img src="file:///{logo_path}" width="75" height="75" />
-                    </td>
-                    <td style="border: none; padding: 4px; vertical-align: top; line-height: 1.2;">
-                        <b>निदेशक / Director</b><br/>
-                        <b>हवाई वितरण अनुसंधान एंव विकास संस्थापन</b><br/>
-                        <b>Aerial Delivery Research &amp; Development Establishment</b><br/>
-                        रक्षा अनुसंधान एंव विकास संगठन<br/>
-                        Defence Research &amp; Development Organisation<br/>
-                        पत्र पेटी संख्या 51, स्टेशन रोड, आगरा कैंट<br/>
-                        Post Box No. 51, Station Road, Agra Cantt-282001
-                    </td>
-                </tr>
-            </table>
+        <div style="display: inline-block;">
+            <img src="file:///{logo_path}" width="400" />
         </div>
         '''
         
@@ -1326,7 +1310,11 @@ class AddressView(QWidget):
             <div style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; line-height: 1.5;">
                 <table width="100%" style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; color: #1a237e; font-weight: bold; border-collapse: collapse; margin-bottom: {margin_bottom};">
                     <tr>
-                        <td align="left" valign="top" width="50%" style="border: none; padding: 0;">{no_line_wrapped}<br/>{date_line_wrapped}</td>
+                        <td align="left" valign="top" width="50%" style="border: none; padding: 0;">
+                            {no_line_wrapped}
+                            <div style="height: 6px;"></div>
+                            {date_line_wrapped}
+                        </td>
                         <td align="right" valign="top" width="50%" style="border: none; padding: 0;">{right_text_wrapped}</td>
                     </tr>
                 </table>
@@ -1350,14 +1338,15 @@ class AddressView(QWidget):
         return html
 
     def _update_preview(self):
-        if not self._selected_record:
-            self.envelope_preview.setPlainText(
-                "← Select a record to preview the envelope.\n← पता देखने के लिए रिकॉर्ड चुनें।"
-            )
-            return
-        rec = self._selected_record.copy()
-        html = self._get_preview_html(rec, is_dialog=False)
-        self.envelope_preview.setHtml(html)
+        if hasattr(self, 'envelope_preview'):
+            if not self._selected_record:
+                self.envelope_preview.setPlainText(
+                    "← Select a record to preview the envelope.\n← पता देखने के लिए रिकॉर्ड चुनें।"
+                )
+                return
+            rec = self._selected_record.copy()
+            html = self._get_preview_html(rec, is_dialog=False)
+            self.envelope_preview.setHtml(html)
 
     def _on_row_double_clicked(self):
         self._view_selected()
@@ -1791,6 +1780,10 @@ class AddressView(QWidget):
     def refresh(self):
         """Reload all records from DB."""
         self._load_records()
+
+    def _open_envelope_preview_for_record(self, record):
+        self._selected_record = record
+        self._open_envelope_preview_dialog()
 
     def _open_envelope_preview_dialog(self):
         if not self._selected_record:

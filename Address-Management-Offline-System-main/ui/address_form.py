@@ -305,17 +305,14 @@ class AddressForm(QWidget):
         grid.setVerticalSpacing(12)
         grid.setContentsMargins(20, 20, 20, 20)
         
-        # Row 0: To (Left) / Designation & Designation Hindi (Right)
-        grid.addWidget(_field_label("To / सेवा में *"), 0, 0, Qt.AlignRight | Qt.AlignVCenter)
-        self.to_field = QLineEdit()
-        self.to_field.setPlaceholderText("e.g. Director / निदेशक")
-        grid.addWidget(self.to_field, 0, 1)
+        # Row 0: Designation & Designation Hindi (Left)
+        self.to_field = QLineEdit()  # Kept hidden for backend compatibility
         
-        grid.addWidget(_field_label("Designation / पदनाम *"), 0, 2, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(_field_label("Designation / पदनाम *"), 0, 0, Qt.AlignRight | Qt.AlignVCenter)
         self.designation = QLineEdit()
         self.designation.setPlaceholderText("e.g. Director")
         self.designation_hi = QLineEdit()  # Kept hidden for compatibility
-        grid.addWidget(self.designation, 0, 3)
+        grid.addWidget(self.designation, 0, 1)
         
         # Row 1: Office/Dept Name (Left) / Address Line 1 (Right)
         grid.addWidget(_field_label("Office/Dept Name / कार्यालय नाम *"), 1, 0, Qt.AlignRight | Qt.AlignVCenter)
@@ -628,7 +625,6 @@ class AddressForm(QWidget):
 
         # Required fields
         required_map = {
-            "to_field":    self.to_field.text().strip(),
             "designation": self.designation.text().strip(),
             "office_name": self.office_name.text().strip(),
             "addr_line1":  self.addr_line1.text().strip(),
@@ -660,6 +656,7 @@ class AddressForm(QWidget):
         dept_label = self.dept_combo.currentText()
         data["dept_id"] = self._dept_map.get(dept_label)
         data["designation_hi"]  = self.designation_hi.text().strip()
+        data["to_field"]        = self.to_field.text().strip()
         data["addr_line2"]      = self.addr_line2.text().strip()
         data["email"]           = email
         data["fax"]             = self.fax.text().strip()

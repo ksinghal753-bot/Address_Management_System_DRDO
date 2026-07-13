@@ -44,7 +44,6 @@ def validate_address(data: dict) -> tuple:
     # Mandatory fields
     required = {
         'dept_id':     'Department / विभाग',
-        'to_field':    'To (Addressee) / प्रेषिती',
         'designation': 'Designation / पदनाम',
         'office_name': 'Office / Office Name',
         'addr_line1':  'Address Line 1 / पता पंक्ति 1',

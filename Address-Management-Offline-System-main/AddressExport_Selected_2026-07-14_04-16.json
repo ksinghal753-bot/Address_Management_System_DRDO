@@ -1,0 +1,27 @@
+[
+    {
+        "addr_line1": "dhwh",
+        "addr_line2": "kk",
+        "city": "ad",
+        "contact_no": "",
+        "created_by": 1,
+        "created_date": "2026-07-13T22:21:12.612752",
+        "date_entry": "2026-07-13",
+        "delivery_type": "Ordinary / साधारण",
+        "dept_id": 8,
+        "dept_name": "ADA",
+        "dept_name_hindi": "एडीए",
+        "designation": "kanika",
+        "designation_hi": "",
+        "email": "",
+        "fax": "",
+        "id": 7,
+        "office_name": "kk",
+        "para_no": "PARA 1",
+        "pin_code": "234512",
+        "ref_suffix": "",
+        "state": "up",
+        "to_field": "",
+        "updated_date": "2026-07-14T03:24:39.229883"
+    }
+]

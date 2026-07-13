@@ -223,3 +223,152 @@ def get_address_stats() -> dict:
     """)
     by_dept = {row[0]: row[1] for row in cur.fetchall()}
     return {"total": total, "by_department": by_dept}
+
+import json
+
+def export_addresses_to_json(filepath: str, records: list) -> tuple[bool, str]:
+    """Export a list of address records to a JSON file."""
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(records, f, ensure_ascii=False, indent=4)
+        log_action('EXPORT_ADDRESSES', f'Exported {len(records)} records to {filepath}')
+        return True, "Export successful."
+    except Exception as e:
+        log_error('export_addresses_to_json', e)
+        return False, f"Export failed: {e}"
+
+def import_addresses_from_json(filepath: str) -> dict:
+    """
+    Import address records from a JSON file.
+    Checks for duplicates based on matching key fields or primary key.
+    Returns a dict with summary stats.
+    """
+    stats = {
+        "total": 0,
+        "imported": 0,
+        "skipped": 0,
+        "failed": 0,
+        "error": None
+    }
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            records = json.load(f)
+            
+        if not isinstance(records, list):
+            stats["error"] = "Invalid JSON format: Expected a list of records."
+            return stats
+            
+        stats["total"] = len(records)
+        cur = db.conn.cursor()
+        
+        for rec in records:
+            try:
+                if not isinstance(rec, dict):
+                    stats["failed"] += 1
+                    continue
+                    
+                # Check for duplicates
+                cur.execute("""
+                    SELECT id FROM addresses 
+                    WHERE to_field=? AND designation=? AND office_name=? 
+                    AND addr_line1=? AND city=? AND pin_code=?
+                """, (
+                    rec.get("to_field", ""),
+                    rec.get("designation", ""),
+                    rec.get("office_name", ""),
+                    rec.get("addr_line1", ""),
+                    rec.get("city", ""),
+                    rec.get("pin_code", "")
+                ))
+                
+                if cur.fetchone():
+                    stats["skipped"] += 1
+                    continue
+                
+                success, msg = add_address(rec)
+                if success:
+                    stats["imported"] += 1
+                else:
+                    stats["failed"] += 1
+            except Exception:
+                stats["failed"] += 1
+                
+        log_action('IMPORT_ADDRESSES', f'Imported {stats["imported"]} records from {filepath}')
+        
+    except json.JSONDecodeError:
+        stats["error"] = "Invalid JSON file. Cannot parse contents."
+    except Exception as e:
+        log_error('import_addresses_from_json', e)
+        stats["error"] = f"Import failed: {e}"
+        
+    return stats
+
+def recover_addresses_from_db(filepath: str) -> dict:
+    """
+    Recover (merge) address records from a SQLite database backup.
+    Checks for duplicates based on matching key fields.
+    Returns a dict with summary stats.
+    """
+    stats = {
+        "total": 0,
+        "imported": 0,
+        "skipped": 0,
+        "failed": 0,
+        "error": None
+    }
+    try:
+        import sqlite3
+        backup_conn = sqlite3.connect(filepath)
+        backup_conn.row_factory = sqlite3.Row
+        backup_cur = backup_conn.cursor()
+        
+        try:
+            backup_cur.execute("SELECT * FROM addresses")
+            records = [dict(row) for row in backup_cur.fetchall()]
+        except sqlite3.OperationalError:
+            stats["error"] = "Invalid database file: 'addresses' table not found."
+            backup_conn.close()
+            return stats
+            
+        backup_conn.close()
+            
+        stats["total"] = len(records)
+        cur = db.conn.cursor()
+        
+        for rec in records:
+            try:
+                cur.execute("""
+                    SELECT id FROM addresses 
+                    WHERE to_field=? AND designation=? AND office_name=? 
+                    AND addr_line1=? AND city=? AND pin_code=?
+                """, (
+                    rec.get("to_field", ""),
+                    rec.get("designation", ""),
+                    rec.get("office_name", ""),
+                    rec.get("addr_line1", ""),
+                    rec.get("city", ""),
+                    rec.get("pin_code", "")
+                ))
+                
+                if cur.fetchone():
+                    stats["skipped"] += 1
+                    continue
+                
+                if "id" in rec:
+                    del rec["id"]
+                    
+                success, msg = add_address(rec)
+                if success:
+                    stats["imported"] += 1
+                else:
+                    stats["failed"] += 1
+            except Exception:
+                stats["failed"] += 1
+                
+        log_action('RECOVER_MERGE_ADDRESSES', f'Merged {stats["imported"]} records from {filepath}')
+        
+    except Exception as e:
+        log_error('recover_addresses_from_db', e)
+        stats["error"] = f"Recovery failed: {e}"
+        
+    return stats

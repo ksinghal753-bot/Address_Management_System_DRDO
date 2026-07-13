@@ -902,6 +902,26 @@ class AddressView(QWidget):
             self.print_btn.clicked.connect(self._show_print_dialog)
         else:
             self.print_btn.clicked.connect(self._print_single)
+            
+        self.export_all_btn = QPushButton("📤 Export All")
+        self.export_all_btn.setObjectName("secondaryButton")
+        self.export_all_btn.clicked.connect(self._export_all_addresses)
+        
+        self.export_sel_btn = QPushButton("📤 Export Selected")
+        self.export_sel_btn.setObjectName("secondaryButton")
+        self.export_sel_btn.clicked.connect(self._export_selected_addresses)
+        
+        self.import_btn = QPushButton("⬇️ Import")
+        self.import_btn.setObjectName("secondaryButton")
+        self.import_btn.clicked.connect(self._import_addresses)
+        
+        self.backup_btn = QPushButton("💾 Backup DB")
+        self.backup_btn.setObjectName("secondaryButton")
+        self.backup_btn.clicked.connect(self._backup_database)
+        
+        self.recover_btn = QPushButton("🔄 Recover DB")
+        self.recover_btn.setObjectName("secondaryButton")
+        self.recover_btn.clicked.connect(self._recover_database)
 
         grid.addWidget(self.add_btn, 0, 0)
         grid.addWidget(self.edit_btn, 0, 1)
@@ -909,6 +929,13 @@ class AddressView(QWidget):
         grid.addWidget(self.clear_sel_btn, 0, 3)
         grid.addWidget(self.del_btn, 0, 4)
         grid.addWidget(self.print_btn, 0, 5)
+        
+        # 5 buttons on the 2nd row
+        grid.addWidget(self.export_all_btn, 1, 0)
+        grid.addWidget(self.export_sel_btn, 1, 1)
+        grid.addWidget(self.import_btn, 1, 2)
+        grid.addWidget(self.backup_btn, 1, 3)
+        grid.addWidget(self.recover_btn, 1, 4)
 
         search_vbox.addLayout(grid)
         search_vbox.addWidget(HLine())
@@ -1096,7 +1123,7 @@ class AddressView(QWidget):
 
     def _handle_row_action(self, action, row_idx):
         rec_id = int(self.table.item(row_idx, 0).text())
-        record = next((r for r in self._all_records if r["id"] == rec_id), None)
+        record = next((r for r in self._records if r["id"] == rec_id), None)
         if not record:
             return
             
@@ -1551,6 +1578,132 @@ class AddressView(QWidget):
                 self._update_preview()
             else:
                 show_error(self, "Error / त्रुटि", msg)
+
+    def _export_all_addresses(self):
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+        from datetime import datetime
+        from modules.address_ops import export_addresses_to_json
+        from ui.shared_widgets import show_info, show_error
+        
+        if not self._records:
+            show_error(self, "Export Error", "No records found in database to export.")
+            return
+            
+        default_name = f"AddressExport_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.json"
+        path, _ = QFileDialog.getSaveFileName(self, "Export All Addresses", default_name, "JSON Files (*.json)")
+        if not path:
+            return
+            
+        success, msg = export_addresses_to_json(path, self._records)
+        if success:
+            QMessageBox.information(
+                self, 
+                "Export Successful", 
+                f"Total Records Exported: {len(self._records)}\nFile Saved At:\n{path}"
+            )
+        else:
+            show_error(self, "Export Failed", msg)
+
+    def _export_selected_addresses(self):
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+        from datetime import datetime
+        from modules.address_ops import export_addresses_to_json
+        from ui.shared_widgets import show_info, show_error
+        
+        checked = self._get_checked_records()
+        if not checked:
+            show_error(self, "Export Error", "No records selected. Please check the rows you want to export.")
+            return
+            
+        default_name = f"AddressExport_Selected_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.json"
+        path, _ = QFileDialog.getSaveFileName(self, "Export Selected Addresses", default_name, "JSON Files (*.json)")
+        if not path:
+            return
+            
+        success, msg = export_addresses_to_json(path, checked)
+        if success:
+            QMessageBox.information(
+                self, 
+                "Export Successful", 
+                f"Total Records Exported: {len(checked)}\nFile Saved At:\n{path}"
+            )
+        else:
+            show_error(self, "Export Failed", msg)
+
+    def _import_addresses(self):
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+        from modules.address_ops import import_addresses_from_json
+        from ui.shared_widgets import show_error
+        
+        path, _ = QFileDialog.getOpenFileName(self, "Import Addresses", "", "JSON Files (*.json)")
+        if not path:
+            return
+            
+        stats = import_addresses_from_json(path)
+        
+        if stats.get("error"):
+            show_error(self, "Import Error", stats["error"])
+            return
+            
+        summary = (
+            f"Import Completed\n\n"
+            f"Total Records in File : {stats.get('total', 0)}\n"
+            f"Successfully Imported : {stats.get('imported', 0)}\n"
+            f"Duplicate Records Skipped : {stats.get('skipped', 0)}\n"
+            f"Failed Records : {stats.get('failed', 0)}"
+        )
+        QMessageBox.information(self, "Import Summary", summary)
+        
+        self._load_records()
+        self._update_preview()
+
+    def _backup_database(self):
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+        from datetime import datetime
+        import shutil
+        from database.db_manager import get_db_path, db
+        from ui.shared_widgets import show_error
+        
+        db.checkpoint()
+        db_path = get_db_path()
+        
+        default_name = f"ADRDE_Backup_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.db"
+        path, _ = QFileDialog.getSaveFileName(self, "Backup Database", default_name, "SQLite Database (*.db)")
+        if not path:
+            return
+            
+        try:
+            shutil.copy2(db_path, path)
+            QMessageBox.information(self, "Backup Successful", f"Database successfully backed up to:\n{path}")
+        except Exception as e:
+            show_error(self, "Backup Failed", f"Failed to backup database:\n{e}")
+
+    def _recover_database(self):
+        from PySide6.QtWidgets import QFileDialog, QMessageBox
+        from modules.address_ops import recover_addresses_from_db
+        from ui.shared_widgets import show_error
+        
+        path, _ = QFileDialog.getOpenFileName(self, "Recover Database", "", "SQLite Database (*.db)")
+        if not path:
+            return
+            
+        stats = recover_addresses_from_db(path)
+        
+        if stats.get("error"):
+            show_error(self, "Recovery Error", stats["error"])
+            return
+            
+        summary = (
+            f"Recovery Completed\n\n"
+            f"Total Records in File : {stats.get('total', 0)}\n"
+            f"Successfully Merged : {stats.get('imported', 0)}\n"
+            f"Duplicate Records Skipped : {stats.get('skipped', 0)}\n"
+            f"Failed Records : {stats.get('failed', 0)}"
+        )
+        QMessageBox.information(self, "Recovery Summary", summary)
+        
+        self._load_records()
+        self._update_preview()
 
     def _get_print_path(self, suffix: str, default_ext=".pdf", no_dialog=False) -> str | None:
         out_dir = get_default_output_dir()

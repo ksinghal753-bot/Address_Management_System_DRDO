@@ -234,3 +234,19 @@
 2026-07-14 03:24:39 | INFO | admin | EDIT_ADDRESS | ID: 6 | Office: wehoif
 2026-07-14 03:28:54 | INFO | admin | LOGIN | Successful login as admin
 2026-07-14 03:32:45 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 03:39:53 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 03:40:25 | INFO | system | BACKUP_CREATED | File: backup_manual_20260714_034025.db
+2026-07-14 03:59:44 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 04:05:38 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 04:10:54 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 04:16:04 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 04:16:25 | INFO | admin | EXPORT_ADDRESSES | Exported 1 records to C:/Users/HP/Downloads/Address-Management-Offline-System-main (1)/Address-Management-Offline-System-main/AddressExport_Selected_2026-07-14_04-16.json
+2026-07-14 04:16:31 | INFO | admin | DELETE_ADDRESS | ID: 7 | Office: kk
+2026-07-14 04:16:38 | INFO | admin | ADD_ADDRESS | Office: kk | Dept ID: 8
+2026-07-14 04:16:38 | INFO | admin | IMPORT_ADDRESSES | Imported 1 records from C:/Users/HP/Downloads/Address-Management-Offline-System-main (1)/Address-Management-Offline-System-main/AddressExport_Selected_2026-07-14_04-16.json
+2026-07-14 04:21:22 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 04:22:18 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 04:27:09 | INFO | admin | LOGIN | Successful login as admin
+2026-07-14 04:27:41 | INFO | admin | DELETE_ADDRESS | ID: 8 | Office: kk
+2026-07-14 04:28:01 | INFO | admin | ADD_ADDRESS | Office: kk | Dept ID: 8
+2026-07-14 04:28:01 | INFO | admin | RECOVER_MERGE_ADDRESSES | Merged 1 records from C:/Users/HP/Downloads/Address-Management-Offline-System-main (1)/Address-Management-Offline-System-main/ADRDE_Backup_2026-07-14_04-27.db

@@ -251,3 +251,4 @@
 2026-07-14 04:28:01 | INFO | admin | ADD_ADDRESS | Office: kk | Dept ID: 8
 2026-07-14 04:28:01 | INFO | admin | RECOVER_MERGE_ADDRESSES | Merged 1 records from C:/Users/HP/Downloads/Address-Management-Offline-System-main (1)/Address-Management-Offline-System-main/ADRDE_Backup_2026-07-14_04-27.db
 2026-07-14 04:28:16 | INFO | admin | EDIT_ADDRESS | ID: 3 | Office: एरियल डिलीवरी रिसर्च एंड डेवलपमेंट एस्टैब्लिशमेंट
+2026-07-14 05:02:14 | INFO | admin | LOGOUT | User admin logged out

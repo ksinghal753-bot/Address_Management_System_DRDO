@@ -131,78 +131,89 @@ class AddressForm(QWidget):
         date_row.setSpacing(8)
         date_lbl = _field_label("Date / दिनांक *")
         self.date_edit = QDateEdit()
+        self.date_edit.setStyleSheet(
+            "QDateEdit { background-color: #FFFFFF; color: #111827; border: 1px solid #D1D5DB; }"
+        )
         cal = QCalendarWidget()
         cal.setStyleSheet("""
     QCalendarWidget {
-        background-color: #FFFFFF;
-        color: #1E293B;
-        border: 1px solid #E5E7EB;
-        border-radius: 10px;
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+        border: 1px solid #D1D5DB !important;
+        border-radius: 10px !important;
     }
     QCalendarWidget QWidget {
-        background-color: #FFFFFF;
-        alternate-background-color: #F8FAFC;
+        background-color: #FFFFFF !important;
+        alternate-background-color: #F8FAFC !important;
     }
     QCalendarWidget QWidget#qt_calendar_navigationbar {
-        background-color: #FFFFFF;
-        border-bottom: 1px solid #E5E7EB;
+        background-color: #FFFFFF !important;
+        border-bottom: 1px solid #D1D5DB !important;
     }
     QCalendarWidget QToolButton {
-        color: #1E293B;
-        background-color: transparent;
-        font-weight: bold;
+        color: #111827 !important;
+        background-color: #FFFFFF !important;
+        font-weight: bold !important;
     }
-    QCalendarWidget QToolButton:hover { background-color: #EFF6FF; }
-    QCalendarWidget QSpinBox { background-color: #FFFFFF; color: #1E293B; }
+    QCalendarWidget QToolButton:hover { background-color: #F3F4F6 !important; }
+    QCalendarWidget QSpinBox { background-color: #FFFFFF !important; color: #111827 !important; }
     QCalendarWidget QTableView {
-        background-color: #FFFFFF;
-        alternate-background-color: #F8FAFC;
-        color: #1E293B;
-        selection-background-color: #2563EB;
-        selection-color: #FFFFFF;
-        border: none;
+        background-color: #FFFFFF !important;
+        alternate-background-color: #F8FAFC !important;
+        color: #111827 !important;
+        selection-background-color: #2563EB !important;
+        selection-color: #FFFFFF !important;
+        border: none !important;
     }
     QCalendarWidget QTableView::item {
-        background-color: #FFFFFF;
-        color: #1E293B;
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
     }
     QCalendarWidget QTableView::item:selected {
-        background-color: #2563EB;
-        color: #FFFFFF;
+        background-color: #2563EB !important;
+        color: #FFFFFF !important;
     }
     QCalendarWidget QAbstractItemView:enabled {
-        color: #1E293B;
-        background-color: #FFFFFF;
-        selection-background-color: #2563EB;
-        selection-color: #FFFFFF;
-        border: none;
-        outline: 0;
+        color: #111827 !important;
+        background-color: #FFFFFF !important;
+        selection-background-color: #2563EB !important;
+        selection-color: #FFFFFF !important;
+        border: none !important;
+        outline: 0 !important;
     }
     QCalendarWidget QAbstractItemView:disabled {
-        color: #94A3B8;
+        color: #94A3B8 !important;
     }
-    QCalendarWidget QHeaderView { background-color: #FFFFFF; border: none; }
+    QCalendarWidget QHeaderView { background-color: #FFFFFF !important; border: none !important; }
     QCalendarWidget QHeaderView::section {
-        background-color: #FFFFFF;
-        color: #1E293B;
-        font-weight: bold;
+        background-color: #FFFFFF !important;
+        color: #374151 !important;
+        font-weight: bold !important;
     }
     QMenu {
         background-color: #FFFFFF;
-        color: #333333;
-        border: 1px solid #E5E7EB;
+        color: #111827;
+        border: 1px solid #D1D5DB;
     }
     QMenu::item {
         background-color: transparent;
-        color: #333333;
+        color: #111827;
         padding: 4px 16px;
     }
     QMenu::item:selected {
-        background-color: #E3F2FD;
+        background-color: #F3F4F6;
     }
     QListView {
-        background-color: #FFFFFF;
-        color: #333333;
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+    }
+    QListView::item {
+        color: #111827 !important;
+        background-color: #FFFFFF !important;
+    }
+    QListView::item:selected {
+        background-color: #2563EB !important;
+        color: #FFFFFF !important;
     }
 
 """)
@@ -211,10 +222,10 @@ class AddressForm(QWidget):
         from PySide6.QtGui import QColor, QPalette
         palette.setColor(QPalette.Window, QColor(255, 255, 255))
         palette.setColor(QPalette.Base, QColor(255, 255, 255))
-        palette.setColor(QPalette.WindowText, QColor(0, 0, 0))
-        palette.setColor(QPalette.Text, QColor(0, 0, 0))
+        palette.setColor(QPalette.WindowText, QColor(17, 24, 39))
+        palette.setColor(QPalette.Text, QColor(17, 24, 39))
         palette.setColor(QPalette.Button, QColor(255, 255, 255))
-        palette.setColor(QPalette.ButtonText, QColor(0, 0, 0))
+        palette.setColor(QPalette.ButtonText, QColor(17, 24, 39))
         cal.setPalette(palette)
         from PySide6.QtGui import QTextCharFormat, QColor
         from PySide6.QtCore import Qt
@@ -240,6 +251,41 @@ class AddressForm(QWidget):
         self.para_combo = QComboBox()
         self.para_combo.setStyle(QStyleFactory.create('Fusion'))
         self.para_combo.setView(QListView())
+        self.para_combo.setStyleSheet("""
+        QComboBox {
+            background-color: #FFFFFF;
+            color: #111827;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+        QComboBox::drop-down {
+            background-color: #FFFFFF;
+            border-left: 1px solid #D1D5DB;
+        }
+        QComboBox::down-arrow {
+            image: none;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #111827;
+            margin-right: 8px;
+        }
+        QComboBox QAbstractItemView {
+            background-color: #FFFFFF !important;
+            color: #111827 !important;
+            border: 1px solid #D1D5DB !important;
+            selection-background-color: #2563EB !important;
+            selection-color: #FFFFFF !important;
+        }
+        QComboBox QAbstractItemView::item {
+            color: #111827 !important;
+            background-color: #FFFFFF !important;
+        }
+        QComboBox QAbstractItemView::item:selected {
+            background-color: #2563EB !important;
+            color: #FFFFFF !important;
+        }
+        """)
         self.para_combo.addItems(PARA_OPTIONS)
         self.para_combo.setCurrentIndex(0)
         self.para_combo.currentIndexChanged.connect(self._update_ref_preview)
@@ -276,6 +322,41 @@ class AddressForm(QWidget):
         self.sp_combo = QComboBox()
         self.sp_combo.setStyle(QStyleFactory.create('Fusion'))
         self.sp_combo.setView(QListView())
+        self.sp_combo.setStyleSheet("""
+        QComboBox {
+            background-color: #FFFFFF;
+            color: #111827;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+        QComboBox::drop-down {
+            background-color: #FFFFFF;
+            border-left: 1px solid #D1D5DB;
+        }
+        QComboBox::down-arrow {
+            image: none;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #111827;
+            margin-right: 8px;
+        }
+        QComboBox QAbstractItemView {
+            background-color: #FFFFFF !important;
+            color: #111827 !important;
+            border: 1px solid #D1D5DB !important;
+            selection-background-color: #2563EB !important;
+            selection-color: #FFFFFF !important;
+        }
+        QComboBox QAbstractItemView::item {
+            color: #111827 !important;
+            background-color: #FFFFFF !important;
+        }
+        QComboBox QAbstractItemView::item:selected {
+            background-color: #2563EB !important;
+            color: #FFFFFF !important;
+        }
+        """)
         self.sp_combo.addItems(DELIVERY_TYPES)
         sp_vbox.addWidget(sp_lbl)
         sp_vbox.addWidget(self.sp_combo)

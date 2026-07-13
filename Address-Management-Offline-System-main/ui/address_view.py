@@ -192,76 +192,79 @@ class EnvelopeReferenceDialog(QDialog):
             group_layout.setContentsMargins(12, 16, 12, 12)
             
             date_edit = QDateEdit()
+            date_edit.setStyleSheet(
+                "QDateEdit { background-color: #FFFFFF; color: #111827; border: 1px solid #D1D5DB; }"
+            )
             cal = QCalendarWidget()
             cal.setStyleSheet("""
     QCalendarWidget { 
-        background-color: #FFFFFF; 
-        color: #1E293B;
-        border: 1px solid #E5E7EB;
-        border-radius: 10px;
+        background-color: #FFFFFF !important; 
+        color: #111827 !important;
+        border: 1px solid #D1D5DB !important;
+        border-radius: 10px !important;
     }
     QCalendarWidget QWidget {
-        background-color: #FFFFFF;
-        alternate-background-color: #F8FAFC;
+        background-color: #FFFFFF !important;
+        alternate-background-color: #F8FAFC !important;
     }
     QCalendarWidget QWidget#qt_calendar_navigationbar { 
-        background-color: #FFFFFF; 
-        border-bottom: 1px solid #E5E7EB; 
+        background-color: #FFFFFF !important; 
+        border-bottom: 1px solid #D1D5DB !important; 
     }
     QCalendarWidget QToolButton { 
-        color: #1E293B; 
-        background-color: transparent; 
-        font-weight: bold; 
+        color: #111827 !important; 
+        background-color: #FFFFFF !important; 
+        font-weight: bold !important; 
     }
-    QCalendarWidget QToolButton:hover { background-color: #EFF6FF; }
-    QCalendarWidget QSpinBox { background-color: #FFFFFF; color: #1E293B; }
+    QCalendarWidget QToolButton:hover { background-color: #F3F4F6 !important; }
+    QCalendarWidget QSpinBox { background-color: #FFFFFF !important; color: #111827 !important; }
     QCalendarWidget QTableView { 
-        background-color: #FFFFFF; 
-        alternate-background-color: #F8FAFC;
-        color: #1E293B; 
-        selection-background-color: #2563EB; 
-        selection-color: #FFFFFF;
-        border: none;
+        background-color: #FFFFFF !important; 
+        alternate-background-color: #F8FAFC !important;
+        color: #111827 !important; 
+        selection-background-color: #2563EB !important; 
+        selection-color: #FFFFFF !important;
+        border: none !important;
     }
     QCalendarWidget QTableView::item {
-        background-color: #FFFFFF;
-        color: #1E293B;
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
     }
     QCalendarWidget QTableView::item:selected {
-        background-color: #2563EB;
-        color: #FFFFFF;
+        background-color: #2563EB !important;
+        color: #FFFFFF !important;
     }
     QCalendarWidget QAbstractItemView:enabled {
-        color: #1E293B;
-        background-color: #FFFFFF;
-        selection-background-color: #2563EB;
-        selection-color: #FFFFFF;
+        color: #111827 !important;
+        background-color: #FFFFFF !important;
+        selection-background-color: #2563EB !important;
+        selection-color: #FFFFFF !important;
     }
     QCalendarWidget QAbstractItemView:disabled {
-        color: #94A3B8;
+        color: #94A3B8 !important;
     }
-    QCalendarWidget QHeaderView { background-color: #FFFFFF; border: none; }
+    QCalendarWidget QHeaderView { background-color: #FFFFFF !important; border: none !important; }
     QCalendarWidget QHeaderView::section { 
-        background-color: #FFFFFF; 
-        color: #1E293B; 
-        font-weight: bold; 
+        background-color: #FFFFFF !important; 
+        color: #374151 !important; 
+        font-weight: bold !important; 
     }
     QMenu {
-        background-color: #FFFFFF;
-        color: #333333;
-        border: 1px solid #E5E7EB;
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+        border: 1px solid #D1D5DB !important;
     }
     QMenu::item {
-        background-color: transparent;
-        color: #333333;
-        padding: 4px 16px;
+        background-color: transparent !important;
+        color: #111827 !important;
+        padding: 4px 16px !important;
     }
     QMenu::item:selected {
-        background-color: #E3F2FD;
+        background-color: #F3F4F6 !important;
     }
     QListView {
-        background-color: #FFFFFF;
-        color: #333333;
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
     }
 
 """)
@@ -270,10 +273,10 @@ class EnvelopeReferenceDialog(QDialog):
             from PySide6.QtGui import QColor, QPalette
             palette.setColor(QPalette.Window, QColor(255, 255, 255))
             palette.setColor(QPalette.Base, QColor(255, 255, 255))
-            palette.setColor(QPalette.WindowText, QColor(0, 0, 0))
-            palette.setColor(QPalette.Text, QColor(0, 0, 0))
+            palette.setColor(QPalette.WindowText, QColor(17, 24, 39))
+            palette.setColor(QPalette.Text, QColor(17, 24, 39))
             palette.setColor(QPalette.Button, QColor(255, 255, 255))
-            palette.setColor(QPalette.ButtonText, QColor(0, 0, 0))
+            palette.setColor(QPalette.ButtonText, QColor(17, 24, 39))
             cal.setPalette(palette)
             from PySide6.QtGui import QTextCharFormat, QColor
             from PySide6.QtCore import Qt
@@ -296,6 +299,33 @@ class EnvelopeReferenceDialog(QDialog):
             para_combo = QComboBox()
             para_combo.setStyle(QStyleFactory.create('Fusion'))
             para_combo.setView(QListView())
+            para_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #FFFFFF;
+                color: #111827;
+                border: 1px solid #D1D5DB;
+                border-radius: 6px;
+                padding: 6px 10px;
+            }
+            QComboBox::drop-down {
+                background-color: #FFFFFF;
+                border-left: 1px solid #D1D5DB;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 6px solid #111827;
+                margin-right: 8px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #FFFFFF;
+                color: #111827;
+                border: 1px solid #D1D5DB;
+                selection-background-color: #2563EB;
+                selection-color: #FFFFFF;
+            }
+            """)
             para_combo.addItems(PARA_OPTIONS)
             para_combo.setMinimumHeight(34)
             if rec.get("para_no"):
@@ -312,6 +342,33 @@ class EnvelopeReferenceDialog(QDialog):
             sp_combo = QComboBox()
             sp_combo.setStyle(QStyleFactory.create('Fusion'))
             sp_combo.setView(QListView())
+            sp_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #FFFFFF;
+                color: #111827;
+                border: 1px solid #D1D5DB;
+                border-radius: 6px;
+                padding: 6px 10px;
+            }
+            QComboBox::drop-down {
+                background-color: #FFFFFF;
+                border-left: 1px solid #D1D5DB;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 6px solid #111827;
+                margin-right: 8px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #FFFFFF;
+                color: #111827;
+                border: 1px solid #D1D5DB;
+                selection-background-color: #2563EB;
+                selection-color: #FFFFFF;
+            }
+            """)
             sp_combo.addItems(DELIVERY_TYPES)
             sp_combo.setMinimumHeight(34)
             if rec.get("delivery_type"):

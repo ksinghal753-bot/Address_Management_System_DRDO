@@ -362,21 +362,24 @@ class ModernStylesheet:
         }
         
         QComboBox QAbstractItemView {
-            background-color: #FFFFFF;
-            border: 2px solid #E2E8F0;
-            border-radius: 8px;
-            selection-background-color: #1E40AF;
-            selection-color: #FFFFFF;
-            outline: none;
+            background-color: #FFFFFF !important;
+            color: #111827 !important;
+            border: 2px solid #E2E8F0 !important;
+            border-radius: 8px !important;
+            selection-background-color: #1E40AF !important;
+            selection-color: #FFFFFF !important;
+            outline: none !important;
         }
         
         QComboBox QAbstractItemView::item {
+            background-color: #FFFFFF !important;
+            color: #111827 !important;
             padding: 8px 12px;
             border-radius: 4px;
         }
         
         QComboBox QAbstractItemView::item:hover {
-            background-color: #EFF6FF;
+            background-color: #EFF6FF !important;
         }
         
         /* ── Date/Time Edit ── */
@@ -428,11 +431,11 @@ class ModernStylesheet:
             gridline-color: #E2E8F0;
             border: 2px solid #E2E8F0;
             border-radius: 12px;
-            font-size: 13px;
-            color: #111827;
-            font-weight: 500;
+            font-size: 14px;
+            color: #000000;
+            font-weight: bold;
             selection-background-color: #BFDBFE;
-            selection-color: #0F172A;
+            selection-color: #000000;
         }
         
         QTableWidget::indicator {
@@ -451,12 +454,14 @@ class ModernStylesheet:
         QTableWidget::item {
             padding: 12px 14px;
             border-bottom: 1px solid #E2E8F0;
-            color: #111827;
+            color: #000000;
+            font-weight: bold;
         }
         
         QTableWidget::item:selected {
             background-color: #BFDBFE;
-            color: #0F172A;
+            color: #000000;
+            font-weight: bold;
         }
         
         QTableWidget::item:alternate {
@@ -818,7 +823,9 @@ class ModernStylesheet:
             gridline-color: #334155;
             border: 2px solid #334155;
             border-radius: 12px;
-            color: #F8FAFC;
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFFFFF;
         }
         
         QTableWidget::indicator {
@@ -837,6 +844,8 @@ class ModernStylesheet:
         QTableWidget::item {
             padding: 12px 14px;
             border-bottom: 1px solid #334155;
+            color: #FFFFFF;
+            font-weight: bold;
         }
         
         QHeaderView::section {

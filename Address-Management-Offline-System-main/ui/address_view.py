@@ -541,35 +541,67 @@ from PySide6.QtGui import QBrush, QPen, QColor, QTextDocument
 from PySide6.QtCore import QSizeF
 
 class ZoomablePreview(QGraphicsView):
-    def __init__(self, html, parent=None):
+    def __init__(self, html, parent=None, paper_size="a4"):
         super().__init__(parent)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
         
-        self.text_doc = QTextDocument()
-        self.text_doc.setHtml(html)
-        
-        # A4 Landscape: 1123 x 794
-        width = 1123
-        height = 794
-        
-        self.bg_rect = QGraphicsRectItem(0, 0, width, height)
-        self.bg_rect.setBrush(QBrush(QColor("white")))
-        self.bg_rect.setPen(QPen(QColor("#999999")))
-        
-        self.doc_item = QGraphicsTextItem()
-        self.doc_item.setDocument(self.text_doc)
-        
-        # Add padding
+        if isinstance(html, str):
+            html_list = [html]
+        else:
+            html_list = html
+            
+        if paper_size == "envelope":
+            # DL Envelope (220 x 110 mm) at 96 DPI: ~831 x 416
+            width = 831
+            height = 416
+        else:
+            # A4 Landscape: 1123 x 794
+            width = 1123
+            height = 794
+            
         padding = 40
+        gap = 20
+        y_offset = 0
+        
+        # Render each envelope visually
+        for h in html_list:
+            bg_rect = QGraphicsRectItem(0, y_offset, width, height)
+            bg_rect.setBrush(QBrush(QColor("white")))
+            pen = QPen(QColor("#777777"))
+            pen.setWidth(2)
+            bg_rect.setPen(pen)
+            self.scene.addItem(bg_rect)
+            
+            doc = QTextDocument()
+            doc.setPageSize(QSizeF(width, height))
+            doc.setHtml(h)
+            doc.setTextWidth(width - padding * 2)
+            
+            doc_item = QGraphicsTextItem()
+            doc_item.setDocument(doc)
+            doc_item.setPos(padding, y_offset + padding)
+            self.scene.addItem(doc_item)
+            
+            y_offset += height + gap
+            
+        # Create a combined document strictly for the QPrinter to use
+        self.text_doc = QTextDocument()
+        self.text_doc.setPageSize(QSizeF(width, height))
         self.text_doc.setTextWidth(width - padding * 2)
-        self.doc_item.setPos(padding, padding)
         
-        self.scene.addItem(self.bg_rect)
-        self.scene.addItem(self.doc_item)
+        from PySide6.QtGui import QTextCursor, QTextBlockFormat, QTextFormat
+        cursor = QTextCursor(self.text_doc)
         
-        self.setBackgroundBrush(QBrush(QColor("#FAFAFA")))
+        for i, h in enumerate(html_list):
+            if i > 0:
+                block_fmt = QTextBlockFormat()
+                block_fmt.setPageBreakPolicy(QTextFormat.PageBreak_AlwaysBefore)
+                cursor.insertBlock(block_fmt)
+            cursor.insertHtml(h)
+        
+        self.setBackgroundBrush(QBrush(QColor("#E0E0E0"))) # Darker background to highlight white envelopes
 
         # Fit in view initially, slightly scaled down
         self.scale(0.7, 0.7)
@@ -1243,7 +1275,7 @@ class AddressView(QWidget):
         self._update_preview()
         self._set_action_btns(True)
 
-    def _get_preview_html(self, rec: dict, is_dialog: bool = False) -> str:
+    def _get_preview_html(self, rec: dict, is_dialog: bool = False, paper_size: str = "a4") -> str:
         ref_no = format_ref_no(rec.get("para_no", ""), rec.get("date_entry", ""), rec.get("ref_suffix", ""))
         sp  = rec.get("delivery_type", "Ordinary / साधारण")
         sp_eng = sp.split("/")[0].strip()
@@ -1290,19 +1322,29 @@ class AddressView(QWidget):
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         logo_path = os.path.join(base_dir, "assets", "adrde_logo.png").replace('\\', '/')
 
+        is_env = (paper_size == "envelope")
+        logo_width = "300" if is_env else "400"
+        
         sender_html = f'''
-        <div style="display: inline-block;">
-            <img src="file:///{logo_path}" width="400" />
+        <div style="display: inline-block; margin-left: 80px;">
+            <img src="file:///{logo_path}" width="{logo_width}" />
         </div>
         '''
         
         address_html = f"<div>{to_label_wrapped}</div>\n"
+        address_html += "<div style='margin-left: 25px;'>\n"
         for line in addr_lines_wrapped:
             address_html += f"<div>{line}</div>\n"
+        address_html += "</div>\n"
             
-        font_size = "14pt" if is_dialog else "13pt"
-        margin_bottom = "40px" if is_dialog else "10px"
-        body_padding = "40px" if is_dialog else "0px"
+        if is_env:
+            font_size = "11pt"
+            margin_bottom = "15px"
+            body_padding = "20px"
+        else:
+            font_size = "14pt" if is_dialog else "13pt"
+            margin_bottom = "40px" if is_dialog else "10px"
+            body_padding = "40px" if is_dialog else "0px"
         
         html = f"""
         <html>
@@ -1311,16 +1353,15 @@ class AddressView(QWidget):
                 <table width="100%" style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; color: #1a237e; font-weight: bold; border-collapse: collapse; margin-bottom: {margin_bottom};">
                     <tr>
                         <td align="left" valign="top" width="50%" style="border: none; padding: 0;">
-                            {no_line_wrapped}
-                            <div style="height: 6px;"></div>
-                            {date_line_wrapped}
+                            <div style="margin-bottom: 15px;">{no_line_wrapped}</div>
+                            <div>{date_line_wrapped}</div>
                         </td>
                         <td align="right" valign="top" width="50%" style="border: none; padding: 0;">{right_text_wrapped}</td>
                     </tr>
                 </table>
                 <table width="100%" style="font-family: Arial, Mangal, sans-serif; font-size: {font_size}; border-collapse: collapse; margin-bottom: 10px;">
                     <tr>
-                        <td width="60%" style="border: none; padding: 0;"></td>
+                        <td width="50%" style="border: none; padding: 0;"></td>
                         <td valign="top" style="color: #000000; border: none; padding: 0;">
                             {address_html}
                         </td>

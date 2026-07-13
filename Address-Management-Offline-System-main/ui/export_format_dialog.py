@@ -100,3 +100,67 @@ class ExportFormatDialog(QDialog):
     def _select(self, option: str):
         self.selected_option = option
         self.accept()
+
+class PaperSizeDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Select Paper Size / पेपर का आकार चुनें")
+        self.setFixedSize(400, 250)
+        self.selected_size = "A4" # Default fallback
+        
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
+        
+        header = QLabel("Choose Paper Size for Printing")
+        header.setAlignment(Qt.AlignCenter)
+        header.setStyleSheet("font-size: 13pt; font-weight: bold; color: #333;")
+        layout.addWidget(header)
+        
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setStyleSheet("background-color: #DDDDDD;")
+        layout.addWidget(line)
+        
+        btn_style = """
+            QPushButton {
+                font-size: 12pt;
+                font-weight: bold;
+                padding: 12px;
+                border-radius: 6px;
+                background-color: #F8F9FA;
+                border: 1px solid #CCCCCC;
+                color: #333333;
+                text-align: left;
+            }
+            QPushButton:hover { background-color: #E2E6EA; }
+        """
+        
+        self.btn_env = QPushButton("✉ Envelope (220 × 110 mm)")
+        self.btn_env.setStyleSheet(btn_style)
+        self.btn_env.setCursor(Qt.PointingHandCursor)
+        self.btn_env.clicked.connect(lambda: self._select("envelope"))
+        layout.addWidget(self.btn_env)
+        
+        self.btn_a4 = QPushButton("📄 A4 size (297 × 210 mm, landscape)")
+        self.btn_a4.setStyleSheet(btn_style)
+        self.btn_a4.setCursor(Qt.PointingHandCursor)
+        self.btn_a4.clicked.connect(lambda: self._select("a4"))
+        layout.addWidget(self.btn_a4)
+        
+        layout.addStretch()
+        
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.setStyleSheet("padding: 8px; font-size: 11pt; background-color: #EEE; border-radius: 4px;")
+        cancel_btn.setCursor(Qt.PointingHandCursor)
+        cancel_btn.clicked.connect(self.reject)
+        
+        btn_box = QHBoxLayout()
+        btn_box.addStretch()
+        btn_box.addWidget(cancel_btn)
+        btn_box.addStretch()
+        layout.addLayout(btn_box)
+        
+    def _select(self, size: str):
+        self.selected_size = size
+        self.accept()

@@ -136,6 +136,67 @@ def execute_export_action(
 
     opt = dlg.selected_option
 
+    # ── Envelope Preview before printing/PDF ──
+    html_preview_doc = None
+    paper_format = "a4"
+    if opt in ("pdf", "direct") and is_envelope_or_label and pdf_suffix in ("Envelope", "Multiple_Envelopes") and hasattr(parent_widget, "_get_preview_html"):
+        from ui.export_format_dialog import PaperSizeDialog
+        size_dlg = PaperSizeDialog(parent_widget)
+        if size_dlg.exec() != QDialog.Accepted:
+            return
+        paper_format = size_dlg.selected_size
+
+        # Generate list of HTML strings for all selected records
+        html_list = []
+        for rec in records:
+            html_list.append(parent_widget._get_preview_html(rec, is_dialog=True, paper_size=paper_format))
+
+        from ui.address_view import ZoomablePreview
+        preview_dlg = QDialog(parent_widget)
+        preview_dlg.setWindowTitle(f"Print Preview ({len(records)} items) / प्रिंट पूर्वावलोकन")
+        preview_dlg.resize(850, 480)
+        lay = QVBoxLayout(preview_dlg)
+        preview_text = ZoomablePreview(html_list, paper_size=paper_format)
+        preview_text.setStyleSheet("QGraphicsView { border: 1px solid #CCCCCC; border-radius: 8px; }")
+        lay.addWidget(preview_text, stretch=1)
+        
+        btn_box = QHBoxLayout()
+        btn_box.addStretch()
+        btn_text = "Proceed to Print / प्रिंट करने के लिए आगे बढ़ें" if opt == "direct" else "Generate PDF / पीडीएफ बनाएं"
+        proceed_btn = QPushButton(btn_text)
+        proceed_btn.setStyleSheet("background-color: #7A1212; color: white; padding: 6px 16px; font-weight: bold; border-radius: 4px;")
+        proceed_btn.clicked.connect(preview_dlg.accept)
+        cancel_btn = QPushButton("Cancel / रद्द करें")
+        cancel_btn.clicked.connect(preview_dlg.reject)
+        btn_box.addWidget(proceed_btn)
+        btn_box.addWidget(cancel_btn)
+        lay.addLayout(btn_box)
+        
+        if preview_dlg.exec() != QDialog.Accepted:
+            return
+            
+        html_preview_doc = preview_text.text_doc
+        
+        # If the user selected PDF generation, use QTextDocument to natively generate the PDF
+        if opt == "pdf":
+            path = parent_widget._get_print_path(pdf_suffix)
+            if not path:
+                return
+            from PySide6.QtPrintSupport import QPrinter
+            from PySide6.QtGui import QPageLayout, QPageSize
+            printer = QPrinter(QPrinter.HighResolution)
+            printer.setOutputFormat(QPrinter.PdfFormat)
+            printer.setOutputFileName(path)
+            printer.setPageOrientation(QPageLayout.Orientation.Landscape)
+            if paper_format == "envelope":
+                printer.setPageSize(QPageSize(QPageSize.DL))
+            else:
+                printer.setPageSize(QPageSize(QPageSize.A4))
+            html_preview_doc.print_(printer)
+            show_info(parent_widget, "PDF Generated", "PDF has been generated successfully.")
+            open_pdf(path)
+            return
+
     if opt == "pdf":
         path = parent_widget._get_print_path(pdf_suffix)
         if not path:
@@ -196,34 +257,6 @@ def execute_export_action(
                 show_error(parent_widget, "Generation Error", result)
                 return
 
-            # ── Envelope Preview before printing ──
-            html_preview_doc = None
-            if is_envelope_or_label and len(records) == 1 and hasattr(parent_widget, "_get_preview_html"):
-                from ui.address_view import ZoomablePreview
-                html = parent_widget._get_preview_html(records[0], is_dialog=True)
-                preview_dlg = QDialog(parent_widget)
-                preview_dlg.setWindowTitle("Print Preview / प्रिंट पूर्वावलोकन")
-                preview_dlg.resize(850, 480)
-                lay = QVBoxLayout(preview_dlg)
-                preview_text = ZoomablePreview(html)
-                preview_text.setStyleSheet("QGraphicsView { border: 1px solid #CCCCCC; border-radius: 8px; }")
-                lay.addWidget(preview_text, stretch=1)
-                
-                btn_box = QHBoxLayout()
-                btn_box.addStretch()
-                proceed_btn = QPushButton("Proceed to Print / प्रिंट करने के लिए आगे बढ़ें")
-                proceed_btn.setStyleSheet("background-color: #7A1212; color: white; padding: 6px 16px; font-weight: bold; border-radius: 4px;")
-                proceed_btn.clicked.connect(preview_dlg.accept)
-                cancel_btn = QPushButton("Cancel / रद्द करें")
-                cancel_btn.clicked.connect(preview_dlg.reject)
-                btn_box.addWidget(proceed_btn)
-                btn_box.addWidget(cancel_btn)
-                lay.addLayout(btn_box)
-                
-                if preview_dlg.exec() != QDialog.Accepted:
-                    return
-                html_preview_doc = preview_text.text_doc
-
             # ── Check for a real physical printer first ──────────────────────
             real_printers = _get_real_printers()
             if not real_printers:
@@ -248,8 +281,14 @@ def execute_export_action(
             
             if pdlg.exec() == QDialog.Accepted:
                 if html_preview_doc:
-                    from PySide6.QtGui import QPageLayout
+                    from PySide6.QtGui import QPageLayout, QPageSize
                     printer.setPageOrientation(QPageLayout.Orientation.Landscape)
+                    # Force single-sided for envelopes/addresses unconditionally
+                    printer.setDuplex(QPrinter.DuplexNone)
+                    if paper_format == "envelope":
+                        printer.setPageSize(QPageSize(QPageSize.DL))
+                    else:
+                        printer.setPageSize(QPageSize(QPageSize.A4))
                     html_preview_doc.print_(printer)
                     pok = True
                 else:
@@ -271,8 +310,14 @@ def execute_export_action(
                     else:
                         printer.setPrinterName(default_printer_info.printerName())
                         if html_preview_doc:
-                            from PySide6.QtGui import QPageLayout
+                            from PySide6.QtGui import QPageLayout, QPageSize
                             printer.setPageOrientation(QPageLayout.Orientation.Landscape)
+                            # Force single-sided for envelopes/addresses unconditionally
+                            printer.setDuplex(QPrinter.DuplexNone)
+                            if paper_format == "envelope":
+                                printer.setPageSize(QPageSize(QPageSize.DL))
+                            else:
+                                printer.setPageSize(QPageSize(QPageSize.A4))
                             html_preview_doc.print_(printer)
                             pok = True
                         else:
